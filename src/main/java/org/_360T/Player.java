@@ -46,4 +46,36 @@ public class Player {
     public void setMessageReceived(Short messageReceived) {
         this.messageReceived = messageReceived;
     }
+
+    public ServerSocket getServerSocket() {
+        return serverSocket;
+    }
+
+    public void setServerSocket(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
+    }
+
+    public Socket getClientSocket() {
+        return clientSocket;
+    }
+
+    public void setClientSocket(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+    }
+
+    public BufferedReader getIn() {
+        return in;
+    }
+
+    public void setIn(BufferedReader in) {
+        this.in = in;
+    }
+
+    public PrintWriter getOut() {
+        return out;
+    }
+
+    public void setOut(PrintWriter out) {
+        this.out = out;
+    }
 }
