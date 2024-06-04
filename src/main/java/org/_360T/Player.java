@@ -1,10 +1,18 @@
 package org._360T;
 
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.net.*;
+
 public class Player {
 
     private String name;
     private Short massageSent;
     private Short messageReceived;
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
+    private BufferedReader in;
+    private PrintWriter out;
 
     public Player(
             String name,
