@@ -1,4 +1,5 @@
 package org._360T;
+
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -8,11 +9,13 @@ public class ChatService {
     private final Player player2;
 
     public ChatService() {
-        BlockingQueue<String> queue1to2 = new ArrayBlockingQueue<>(10);
-        BlockingQueue<String> queue2to1 = new ArrayBlockingQueue<>(10);
+        //Base on the file we need just 10 message to be sent and received for player.
+        BlockingQueue<String> messageSentFromOneToTwoQueue = new ArrayBlockingQueue<>(10);
+        BlockingQueue<String> messageSentFromTwoToOneQueue = new ArrayBlockingQueue<>(10);
 
-        player1 = new Player("Player 1", queue1to2, queue2to1, true);
-        player2 = new Player("Player 2", queue2to1, queue1to2, false);
+        //     ***          -- player name --       -- sent message --          -- received message --    -- Am I the initiator --
+        player1 = new Player("Player 1", messageSentFromOneToTwoQueue, messageSentFromTwoToOneQueue, true);
+        player2 = new Player("Player 2", messageSentFromTwoToOneQueue, messageSentFromOneToTwoQueue, false);
     }
 
     public void startChat() {
