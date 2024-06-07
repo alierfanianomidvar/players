@@ -1,81 +1,61 @@
 package org._360T;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.*;
+import java.util.concurrent.BlockingQueue;
 
-public class Player {
-
-    private String name;
-    private Short massageSent;
-    private Short messageReceived;
-    private ServerSocket serverSocket;
-    private Socket clientSocket;
-    private BufferedReader in;
-    private PrintWriter out;
+class Player extends Thread {
+    private final BlockingQueue<String> inQueue;
+    private final BlockingQueue<String> outQueue;
+    private final String name;
+    private final boolean initiator;
 
     public Player(
             String name,
-            Short massageSent,
-            Short messageReceived) {
+            BlockingQueue<String> inQueue,
+            BlockingQueue<String> outQueue,
+            boolean initiator) {
         this.name = name;
-        this.massageSent = massageSent;
-        this.messageReceived = messageReceived;
+        this.inQueue = inQueue;
+        this.outQueue = outQueue;
+        this.initiator = initiator;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public void run() {
+        try {
+            int messagesSent = 0;
+            int messagesReceived = 0;
+
+            if (initiator) {
+                sendNewMessage(messagesSent);
+                messagesSent++;
+            }
+
+            while (messagesSent < 10 && messagesReceived < 10) {
+                if (!outQueue.isEmpty()) {
+                    String message = outQueue.take();
+                    System.out.println(name + " received: " + message);
+                    messagesReceived++;
+
+                    if (messagesSent < 10) {
+                        sendNewMessage(messagesSent);
+                        messagesSent++;
+                    }
+                }
+
+                Thread.sleep(1000);
+            }
+
+            System.out.println(name + " is closing the chat.");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Short getMassageSent() {
-        return massageSent;
-    }
-
-    public void setMassageSent(Short massageSent) {
-        this.massageSent = massageSent;
-    }
-
-    public Short getMessageReceived() {
-        return messageReceived;
-    }
-
-    public void setMessageReceived(Short messageReceived) {
-        this.messageReceived = messageReceived;
-    }
-
-    public ServerSocket getServerSocket() {
-        return serverSocket;
-    }
-
-    public void setServerSocket(ServerSocket serverSocket) {
-        this.serverSocket = serverSocket;
-    }
-
-    public Socket getClientSocket() {
-        return clientSocket;
-    }
-
-    public void setClientSocket(Socket clientSocket) {
-        this.clientSocket = clientSocket;
-    }
-
-    public BufferedReader getIn() {
-        return in;
-    }
-
-    public void setIn(BufferedReader in) {
-        this.in = in;
-    }
-
-    public PrintWriter getOut() {
-        return out;
-    }
-
-    public void setOut(PrintWriter out) {
-        this.out = out;
+    private void sendNewMessage(int messagesSent) throws InterruptedException {
+        String newMessage = "Message " + (messagesSent + 1) + " from " + name;
+        inQueue.put(newMessage);
+        System.out.println(name + " sent Message - > " + newMessage);
     }
 }
