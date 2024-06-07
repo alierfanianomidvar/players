@@ -1,23 +1,23 @@
 package org._360T;
 
-import java.io.*;
-import java.net.*;
 import java.util.concurrent.BlockingQueue;
 
 class Player extends Thread {
-    private final BlockingQueue<String> inQueue;
-    private final BlockingQueue<String> outQueue;
-    private final String name;
-    private final boolean initiator;
+
+    private final String name; // name - Id.
+    private final boolean initiator; // Base on this we can change who is the first one will send the message.
+
+    private final BlockingQueue<String> sentMessageQueue;
+    private final BlockingQueue<String> receivedMessageQueue;
 
     public Player(
             String name,
-            BlockingQueue<String> inQueue,
-            BlockingQueue<String> outQueue,
+            BlockingQueue<String> sentMessageQueue,
+            BlockingQueue<String> receivedMessageQueue,
             boolean initiator) {
         this.name = name;
-        this.inQueue = inQueue;
-        this.outQueue = outQueue;
+        this.sentMessageQueue = sentMessageQueue;
+        this.receivedMessageQueue = receivedMessageQueue;
         this.initiator = initiator;
     }
 
@@ -33,15 +33,14 @@ class Player extends Thread {
             }
 
             while (messagesSent < 10 && messagesReceived < 10) {
-                if (!outQueue.isEmpty()) {
-                    String message = outQueue.take();
+                // we send back the message when we received the message from the other player.
+                if (!receivedMessageQueue.isEmpty()) {
+                    String message = receivedMessageQueue.take();
                     System.out.println(name + " received: " + message);
                     messagesReceived++;
 
-                    if (messagesSent < 10) {
-                        sendNewMessage(messagesSent);
-                        messagesSent++;
-                    }
+                    sendNewMessage(messagesSent);
+                    messagesSent++;
                 }
 
                 Thread.sleep(1000);
@@ -49,13 +48,13 @@ class Player extends Thread {
 
             System.out.println(name + " is closing the chat.");
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("We have an error the message is - >" + e.getMessage());
         }
     }
 
     private void sendNewMessage(int messagesSent) throws InterruptedException {
-        String newMessage = "Message " + (messagesSent + 1) + " from " + name;
-        inQueue.put(newMessage);
+        String newMessage = "! Message " + (messagesSent + 1) + " from " + name;
+        sentMessageQueue.put(newMessage);
         System.out.println(name + " sent Message - > " + newMessage);
     }
 }
