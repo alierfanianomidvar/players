@@ -2,15 +2,14 @@ package org._360T;
 
 import org._360T.Communicator.Communicator;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 class Player extends Thread {
 
     private final String name; // name - Id.
     private final boolean initiator; // Base on this we can change who is the first one will send the message.
-
-    private final Communicator communicator;
-
+    private final Communicator communicator; // This player class can use the socket or the other version of the chat system we have.
 
     public Player(
             String name,
@@ -46,7 +45,7 @@ class Player extends Thread {
             }
 
             System.out.println(name + " is closing the chat.");
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             System.out.println("We have an error the message is - >" + e.getMessage());
         }
     }
