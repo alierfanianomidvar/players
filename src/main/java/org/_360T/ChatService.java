@@ -1,5 +1,8 @@
 package org._360T;
 
+import org._360T.Communicator.Communicator;
+import org._360T.Communicator.Imp.InSameProcessCommunicator;
+
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -13,9 +16,13 @@ public class ChatService {
         BlockingQueue<String> messageSentFromOneToTwoQueue = new ArrayBlockingQueue<>(10);
         BlockingQueue<String> messageSentFromTwoToOneQueue = new ArrayBlockingQueue<>(10);
 
-        //     ***          -- player name --       -- sent message --          -- received message --    -- Am I the initiator --
-        player1 = new Player("Player 1", messageSentFromOneToTwoQueue, messageSentFromTwoToOneQueue, true);
-        player2 = new Player("Player 2", messageSentFromTwoToOneQueue, messageSentFromOneToTwoQueue, false);
+        Communicator communicatorPlayerOne = new InSameProcessCommunicator(messageSentFromOneToTwoQueue, messageSentFromTwoToOneQueue);
+        Communicator communicatorPlayerTwo = new InSameProcessCommunicator(messageSentFromTwoToOneQueue, messageSentFromOneToTwoQueue);
+
+
+        //     ***          -- player name --   -- Communicator --   -- Am I the initiator --
+        player1 = new Player("Player 1", communicatorPlayerOne, true);
+        player2 = new Player("Player 2", communicatorPlayerTwo, false);
     }
 
     public void startChat() {

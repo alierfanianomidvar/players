@@ -1,5 +1,7 @@
 package org._360T;
 
+import org._360T.Communicator.Communicator;
+
 import java.util.concurrent.BlockingQueue;
 
 class Player extends Thread {
@@ -7,17 +9,15 @@ class Player extends Thread {
     private final String name; // name - Id.
     private final boolean initiator; // Base on this we can change who is the first one will send the message.
 
-    private final BlockingQueue<String> sentMessageQueue;
-    private final BlockingQueue<String> receivedMessageQueue;
+    private final Communicator communicator;
+
 
     public Player(
             String name,
-            BlockingQueue<String> sentMessageQueue,
-            BlockingQueue<String> receivedMessageQueue,
+            Communicator communicator,
             boolean initiator) {
         this.name = name;
-        this.sentMessageQueue = sentMessageQueue;
-        this.receivedMessageQueue = receivedMessageQueue;
+        this.communicator = communicator;
         this.initiator = initiator;
     }
 
@@ -34,11 +34,10 @@ class Player extends Thread {
 
             while (messagesSent < 10 && messagesReceived < 10) {
                 // we send back the message when we received the message from the other player.
-                if (!receivedMessageQueue.isEmpty()) {
-                    String message = receivedMessageQueue.take();
+                String message = communicator.receiveMessage();
+                if (message != null) {
                     System.out.println(name + " received: " + message);
                     messagesReceived++;
-
                     sendNewMessage(messagesSent);
                     messagesSent++;
                 }
@@ -54,7 +53,7 @@ class Player extends Thread {
 
     private void sendNewMessage(int messagesSent) throws InterruptedException {
         String newMessage = "! Message " + (messagesSent + 1) + " from " + name;
-        sentMessageQueue.put(newMessage);
         System.out.println(name + " sent Message - > " + newMessage);
+        communicator.sendMessage(newMessage);
     }
 }
