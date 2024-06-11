@@ -6,7 +6,6 @@ import java.io.*;
 import java.net.*;
 
 public class SocketCommunicatorImp implements Communicator {
-
     private final Socket socket;
     private final BufferedReader in;
     private final PrintWriter out;
